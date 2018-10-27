@@ -1,6 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
+
+const users = require('./routes/api/users');
+const profile = require('./routes/api/profile');
+const posts = require('./routes/api/posts');
+
 const app = express();
+
+//body parser middleware
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const { port } = require('./config/config');
 
@@ -17,8 +27,13 @@ mongoose.connect(db, { useNewUrlParser: true })
     });
 
 app.get('/', (req, res) => {
-    res.send('Hi nodejs app');
+    res.send('Hi app');
 });
+
+// //use routes
+app.use('/api/users', users);
+app.use('/api/profile', profile);
+app.use('/api/posts', posts);
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);
