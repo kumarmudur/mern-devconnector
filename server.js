@@ -26,11 +26,7 @@ mongoose.connect(db, { useNewUrlParser: true })
         console.log(err);
     });
 
-app.get('/', (req, res) => {
-    res.send('Hi app');
-});
-
-// //use routes
+//use routes
 app.use('/api/users', users);
 app.use('/api/profile', profile);
 app.use('/api/posts', posts);

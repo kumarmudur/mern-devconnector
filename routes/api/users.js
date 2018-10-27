@@ -56,8 +56,8 @@ router.post('/rigister', (req, res) => {
 // @desc login user/returning token
 // @access public
 router.post('/login', (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
+    const { email, password } = req.body;
+
     //find user by email
     User.findOne({ email })
         .then(user => {
