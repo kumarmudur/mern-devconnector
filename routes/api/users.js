@@ -4,6 +4,7 @@ const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const keys = require('../../config/config');
+const passport = require('passport');
 
 //load user model
 const User = require('../../models/User');
@@ -17,7 +18,7 @@ router.get('/test', (req, res) => {
     });
 });
 
-// @route get api/users/rigister
+// @route post api/users/rigister
 // @desc  register user
 // @access public
 router.post('/rigister', (req, res) => {
@@ -54,7 +55,7 @@ router.post('/rigister', (req, res) => {
         })
 });
 
-// @route get api/users/rigister
+// @route post api/users/login
 // @desc login user/returning token
 // @access public
 router.post('/login', (req, res) => {
@@ -74,14 +75,15 @@ router.post('/login', (req, res) => {
                     if (isMatch) {
                         //user matched create jwt payload
                         const payload = {
-                                id: user.id,
-                                name: user.name,
-                                avatar: user.avatar
-                            }
-                            //sign token
+                            id: user.id,
+                            name: user.name,
+                            avatar: user.avatar
+                        }
+
+                        //sign token
                         jwt.sign(
                             payload,
-                            keys.secretKey, { expiresIn: 3600 },
+                            keys.secretOrKey, { expiresIn: 3600 },
                             (err, token) => {
                                 res.json({
                                     success: true,
@@ -95,5 +97,17 @@ router.post('/login', (req, res) => {
         });
 });
 
+// @route get api/users/current
+// @desc return current user
+// @access private
+router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const { id, name, email } = req.user;
+    const userObj = {
+        id,
+        name,
+        email
+    };
+    res.json(userObj);
+});
 
 module.exports = router;
