@@ -7,6 +7,9 @@ const passport = require('passport');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 
+//load input validation
+const validateProfileInput = require('../../validation/profile');
+
 // @route Get api/users/test
 // @desc  tests profile route
 // @access Public
@@ -22,6 +25,7 @@ router.get('/test', (req, res) => {
 router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => {
     const errors = {};
     Profile.findOne({ user: req.user.id })
+        .populate('user', ['name', 'avatar'])
         .then(profile => {
             if (!profile) {
                 errors.noProfile = 'There is no profile for this user';
@@ -38,13 +42,38 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 // @desc  Create user profile
 // @access Private
 router.post('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+    const { errors, isValid } = validateProfileInput(req.body);
+
+    //check validation
+    if (!isValid) {
+        //return any errors with 400 status
+        return res.status(400).json(errors);
+    }
+
     //get fields
     const profileFields = {};
     profileFields.user = req.user.id;
-    const { handle, company, website, location, status, skills, bio, githubusername, social, date } = req.body;
+    const {
+        handle,
+        company,
+        website,
+        location,
+        status,
+        skills,
+        bio,
+        githubusername,
+        social,
+        date,
+        youtube,
+        twitter,
+        facebook,
+        linkedin,
+        instagram
+    } = req.body;
 
     if (handle) profileFields.handle = handle;
     if (company) profileFields.company = company;
+    if (website) profileFields.website = website;
     if (location) profileFields.location = location;
     if (status) profileFields.status = status;
     if (bio) profileFields.bio = bio;
@@ -57,11 +86,11 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
 
     //social
     profileFields.social = {};
-    if (req.body.youtube) profileFields.social.youtube = req.body.youtube;
-    if (req.body.twitter) profileFields.social.twitter = req.body.twitter;
-    if (req.body.facebook) profileFields.social.facebook = req.body.facebook;
-    if (req.body.linkedin) profileFields.social.linkedin = req.body.linkedin;
-    if (req.body.instagram) profileFields.social.instagram = req.body.instagram;
+    if (youtube) profileFields.social.youtube = youtube;
+    if (twitter) profileFields.social.twitter = twitter;
+    if (facebook) profileFields.social.facebook = facebook;
+    if (linkedin) profileFields.social.linkedin = linkedin;
+    if (instagram) profileFields.social.instagram = instagram;
 
     Profile.findOne({ user: req.user.id })
         .then(profile => {
