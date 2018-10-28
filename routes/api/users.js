@@ -13,7 +13,7 @@ const User = require('../../models/User');
 const validateRegisterInput = require('../../validation/register');
 const validateLoginInput = require('../../validation/login');
 
-// @route get api/users/test
+// @route Get api/users/test
 // @desc  tests users route
 // @access public
 router.get('/test', (req, res) => {
@@ -22,7 +22,7 @@ router.get('/test', (req, res) => {
     });
 });
 
-// @route post api/users/rigister
+// @route Post api/users/rigister
 // @desc  register user
 // @access public
 router.post('/rigister', (req, res) => {
@@ -67,7 +67,7 @@ router.post('/rigister', (req, res) => {
         })
 });
 
-// @route post api/users/login
+// @route Post api/users/login
 // @desc login user/returning token
 // @access public
 router.post('/login', (req, res) => {
@@ -118,7 +118,7 @@ router.post('/login', (req, res) => {
         });
 });
 
-// @route get api/users/current
+// @route Get api/users/current
 // @desc return current user
 // @access private
 router.get('/current', passport.authenticate('jwt', { session: false }), (req, res) => {
