@@ -9,6 +9,9 @@ const passport = require('passport');
 //load user model
 const User = require('../../models/User');
 
+//load input validation
+const validateRegisterInput = require('../../validation/register');
+
 // @route get api/users/test
 // @desc  tests users route
 // @access public
@@ -22,6 +25,13 @@ router.get('/test', (req, res) => {
 // @desc  register user
 // @access public
 router.post('/rigister', (req, res) => {
+    const { errors, isValid } = validateRegisterInput(req.body);
+
+    //check validation
+    if (!isValid) {
+        return res.status(400).json(errors);
+    }
+
     User.findOne({ email: req.body.email })
         .then(user => {
             if (user) {
